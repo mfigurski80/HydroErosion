@@ -15,12 +15,13 @@ def generateNoiseMap(height, width, smooth=10):
     return map
 
 if __name__ == '__main__':
-    map = generateNoiseMap(1000,1000)
+    map = generateNoiseMap(200,200)
     # print(map)
     string = ''
     for i in map:
         for j in i:
             string += str(j) + ','
+        string = string[0:-1] # remove trailing comma
         string += '\n'
     # print(string)
 
