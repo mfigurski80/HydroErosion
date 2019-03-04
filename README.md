@@ -1,2 +1,2 @@
 # HydroErosion
-Model of eroding rain on landscape
+Python model of rain eroding a landscape.
