@@ -1,7 +1,7 @@
 import noise
 
 def generateNoiseMap(length, width):
-    scale = 70
+    scale = 140
     octaves = 3
     persistence = 0.5
     lacunarity = 2.0
@@ -16,7 +16,7 @@ def generateNoiseMap(length, width):
     return map
 
 if __name__ == '__main__':
-    map = generateNoiseMap(200,200)
+    map = generateNoiseMap(500,500)
     # print(map)
     string = ''
     for i in map:
