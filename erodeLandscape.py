@@ -27,7 +27,7 @@ def mean(list):
     return sum(list)/len(list)
 
 # Perform actual erosion operation on map
-def erodeMap(map, iter=10000, carry=.5):
+def erodeMap(map, iter=100000, carry=.2):
     for i in range(iter):
 
         # set up initial vars and xy positions for droplet
@@ -36,13 +36,14 @@ def erodeMap(map, iter=10000, carry=.5):
 
         # print(str(x) + ":" + str(y))
 
-        for time in range(10):
+        for time in range(30):
             # find lowest surrounding point
             fu_x = x
             fu_y = y
             for i in [-1,0,1]:
                 for j in [-1,0,1]:
-                    if x+i < len(map) and y+j < len(map) and map[x+i][y+j] < map[fu_x][fu_y]:
+                    if x+i < len(map) and y+j < len(map) and x+i >= 0 and y+j >= 0 and map[x+i][y+j] < map[fu_x][fu_y]:
+                        # if not out of bounds and new pos is lower than current pos...
                         fu_x = x+i
                         fu_y = y+j
 
@@ -58,6 +59,6 @@ def erodeMap(map, iter=10000, carry=.5):
 
 if __name__ == '__main__':
     map = readCSV('map.csv')
-    newmap = erodeMap(map, 50000)
+    newmap = erodeMap(map, 350000, .1)
     writeCSV(newmap, 'erodedmap.csv')
     viewLandscape.viewMap(newmap, 100)

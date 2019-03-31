@@ -12,7 +12,7 @@ Graphs given 2x2 matrix in 3D
 Performs Naive algorithm to erode given landscape
 
 ## Results (so far):
-Performed erosion on 150x150 terrain with 50,000 iterations
+Performed erosion on 150x150 terrain with 350,000 iterations (current maps)
 
 Before: ![Before Erosion](/images/before.png)
 
