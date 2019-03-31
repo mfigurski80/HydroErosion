@@ -58,6 +58,6 @@ def erodeMap(map, iter=10000, carry=.5):
 
 if __name__ == '__main__':
     map = readCSV('map.csv')
-    newmap = erodeMap(map, 100000)
+    newmap = erodeMap(map, 50000)
     writeCSV(newmap, 'erodedmap.csv')
     viewLandscape.viewMap(newmap, 100)
