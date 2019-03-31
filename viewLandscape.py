@@ -1,7 +1,7 @@
 from mayavi import mlab
 
 # Render map
-def viewMap(map, factor=100):
+def viewMap(map, factor=150):
     map = [[j*factor for j in i] for i in map]
     mlab.surf(map)
     mlab.show()
@@ -17,4 +17,4 @@ def readCSV(filename):
 
 if __name__ == '__main__':
     surf = readCSV('map.csv')
-    viewMap(surf, 100)
+    viewMap(surf, 150)

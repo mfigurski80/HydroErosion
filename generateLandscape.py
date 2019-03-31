@@ -1,8 +1,8 @@
 import noise
 
 def generateNoiseMap(length, width):
-    scale = 140
-    octaves = 3
+    scale = 190
+    octaves = 4
     persistence = 0.5
     lacunarity = 2.0
     map = [[noise.pnoise2(i/scale, j/scale,
@@ -15,18 +15,18 @@ def generateNoiseMap(length, width):
     ) for i in range(width)] for j in range(length)]
     return map
 
-if __name__ == '__main__':
-    map = generateNoiseMap(500,500)
-    # print(map)
+def writeCSV(data, filename):
     string = ''
-    for i in map:
+    for i in data:
         for j in i:
-            string += str(j) + ','
+            string += str(round(j,6)) + ','
         string = string[0:-1] # remove trailing comma
         string += '\n'
-    # print(string)
-
     # write to file
-    file = open('map.csv','w')
+    file = open(filename, 'w')
     file.write(string)
     file.close()
+
+if __name__ == '__main__':
+    map = generateNoiseMap(150,150)
+    writeCSV(map, 'map.csv')
