@@ -28,5 +28,5 @@ def writeCSV(data, filename):
     file.close()
 
 if __name__ == '__main__':
-    map = generateNoiseMap(150,150)
-    writeCSV(map, 'map.csv')
+    heightmap = generateNoiseMap(150,150)
+    writeCSV(heightmap, './maps/raw/heightmap.csv')
