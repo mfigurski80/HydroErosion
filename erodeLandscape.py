@@ -39,13 +39,14 @@ def erodeMap(map, iter=200000, carry=.1):
         # print(str(x) + ":" + str(y))
 
         for time in range(30): # drop lifespan = 30
-            # find lowest surrounding point, TODO: weigh corners more
-            fu_x = x
+            # find lowest surrounding point, weigh corners more
+            fu_x = x # fu stands for future. Not, you know...
             fu_y = y
             for i in [-1,0,1]:
                 for j in [-1,0,1]:
                     if (x+i < len(map) and y+j < len(map) and x+i >= 0 and y+j >= 0) and (map[x+i][y+j] < map[fu_x][fu_y]):
                         # if not out of bounds and new pos is lower than current pos...
+                        # also, if choosing corner adjust for proper distance -- should be sqrt(2)
                         if (i + j == 2 or i + j == -2) and not ((map[x+i][y+j] - map[x][y])/1.41 < map[fu_x][fu_y] - map[x][y]):
                             continue
                         fu_x = x+i
