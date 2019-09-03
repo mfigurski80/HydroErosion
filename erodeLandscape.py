@@ -1,35 +1,31 @@
 import random
-import viewLandscape
+from utilities import readCSV, writeCSV, mean
+from viewLandscape import viewMap
 
-# Read a float csv
-def readCSV(filename):
-    res = []
-    file = open(filename)
-    for line in file.readlines():
-        strings = line.strip().split(',')
-        res.append([float(i) for i in strings])
-    return res
-# Write to a csv
-def writeCSV(data, filename):
-    string = ''
-    for i in data:
-        for j in i:
-            string += str(j) + ','
-        string = string[0:-1] # remove trailing comma
-        string += '\n'
-    # write to file
-    file = open(filename, 'w')
-    file.write(string)
-    file.close()
 
-def mean(list):
-    # really python. u gonna make me do this...
-    return sum(list)/len(list)
+def getDeltaHeight(map, x, y):
+    deltaHeight = []
+    for i in [-1,0,1]:
+        deltaHeight.append([])
+        for j in [-1,0,1]:
+            if (x+i >= len(map)) or (x+i < 0) or (y+j >= len(map[0])) or (y+j < 0):
+                # out of bounds. make sure doesn't get picked
+                deltaHeight[i+1].append(10000)
+            else:
+                deltaHeight[i+1].append(map[x+i][y+j] - map[x][y])
+                if (abs(i+j) == 2 and i != 0): # weight corners less
+                    deltaHeight[i+1][j+1] *= .65 # 1/sqrt(2)
+
+    return deltaHeight
+
 
 # Perform actual erosion operation on map
-def erodeMap(map, iter=200000, carry=.1):
+def erodeMap(map, rockmap, iter=400000, carry=.07):
+
+    hydrationMap = [[0] * len(row) for row in map]
+
     for i in range(iter):
-        if (i%10000 == 0):
+        if (i%50000 == 0):
             print('Eroding Drop: ' + str(i))
 
         # set up initial vars and xy positions for droplet
@@ -38,33 +34,42 @@ def erodeMap(map, iter=200000, carry=.1):
 
         # print(str(x) + ":" + str(y))
 
-        for time in range(30): # drop lifespan = 30
-            # find lowest surrounding point, weigh corners more
-            fu_x = x # fu stands for future. Not, you know...
-            fu_y = y
+        for time in range(25): # drop lifespan = 30
+            # find lowest surrounding point
+            deltaHeight = getDeltaHeight(map, x, y)
+            d_x = 0
+            d_y = 0
             for i in [-1,0,1]:
                 for j in [-1,0,1]:
-                    if (x+i < len(map) and y+j < len(map) and x+i >= 0 and y+j >= 0) and (map[x+i][y+j] < map[fu_x][fu_y]):
-                        # if not out of bounds and new pos is lower than current pos...
-                        # also, if choosing corner adjust for proper distance -- should be sqrt(2)
-                        if (i + j == 2 or i + j == -2) and not ((map[x+i][y+j] - map[x][y])/1.41 < map[fu_x][fu_y] - map[x][y]):
-                            continue
-                        fu_x = x+i
-                        fu_y = y+j
+                    if (deltaHeight[i+1][j+1] < deltaHeight[d_x][d_y]):
+                        d_x = i
+                        d_y = j
+            fu_x = x + d_x
+            fu_y = y + d_y
 
             # Perform droplet move
             ch_height = map[x][y] - map[fu_x][fu_y]
-            map[x][y] -= carry * ch_height
+            rockMult = 1
+            if (map[x][y] - carry*ch_height < rockmap[x][y]):
+                rockMult = 0
+                # print('hit rock')
+                rockmap[x][y] = map[x][y] - carry*ch_height*rockMult
+            map[x][y] -= carry * ch_height * rockMult
             map[fu_x][fu_y] += carry * ch_height
 
             x = fu_x
             y = fu_y
 
+            # set hydrationMap
+            hydrationMap[x][y] += 1
 
-    return map
+
+    return (map, hydrationMap)
 
 if __name__ == '__main__':
     map = readCSV('./maps/raw/heightmap.csv')
-    newmap = erodeMap(map)
-    writeCSV(newmap, './maps/eroded/erodedmap.csv')
-    viewLandscape.viewMap(newmap, 100)
+    rock = readCSV('./maps/raw/rockmap.csv')
+    height, hydration = erodeMap(map, rock, 600000)
+    writeCSV(height, './maps/processed/erodedmap.csv')
+    writeCSV(hydration, './maps/processed/hydrationmap.csv')
+    viewMap(hydration)
