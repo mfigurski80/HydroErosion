@@ -1,12 +1,12 @@
 # HydroErosion
-Python model of rain eroding a landscape. Hydroerosion model places random 'drops' on terrain and moves the terrain based on their movement
+Python model of rain eroding a landscape. HydroErosion model places random 'drops' on terrain and moves the terrain based on their movement
 
 ## File Descriptions
 ### generateLandscape.py
-Creates a 2x2 matrix describing height and bedrock, using perlin noise
+Creates two matrices to describe height and bedrock, using perlin noise
 
 ### viewLandscape.py
-Graphs given 2x2 matrix in 3D
+Graphs given matrix in 3D
 
 ### erodeLandscape.py
 Performs Naive algorithm to erode given landscape, accounting for bedrock
