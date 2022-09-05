@@ -1,59 +1,67 @@
+#! /home/miko/python/HydroErosion/env/bin/python3
+
+import sys
 import random
 from utilities import readCSV, writeCSV, mean
-from viewLandscape import viewMap
+
+#  from viewLandscape import viewMap
 
 
 def getDeltaHeight(map, x, y):
     deltaHeight = []
-    for i in [-1,0,1]:
+    for i in [-1, 0, 1]:
         deltaHeight.append([])
-        for j in [-1,0,1]:
-            if (x+i >= len(map)) or (x+i < 0) or (y+j >= len(map[0])) or (y+j < 0):
+        for j in [-1, 0, 1]:
+            if (
+                (x + i >= len(map))
+                or (x + i < 0)
+                or (y + j >= len(map[0]))
+                or (y + j < 0)
+            ):
                 # out of bounds. make sure doesn't get picked
-                deltaHeight[i+1].append(10000)
+                deltaHeight[i + 1].append(10000)
             else:
-                deltaHeight[i+1].append(map[x+i][y+j] - map[x][y])
-                if (abs(i+j) == 2 and i != 0): # weight corners less
-                    deltaHeight[i+1][j+1] *= .65 # 1/sqrt(2)
+                deltaHeight[i + 1].append(map[x + i][y + j] - map[x][y])
+                if abs(i + j) == 2 and i != 0:  # weight corners less
+                    deltaHeight[i + 1][j + 1] *= 0.65  # 1/sqrt(2)
 
     return deltaHeight
 
 
 # Perform actual erosion operation on map
-def erodeMap(map, rockmap, iter=400000, carry=.07):
+def erodeMap(map, rockmap, iter=400000, carry=0.15):
 
     hydrationMap = [[0] * len(row) for row in map]
 
     for i in range(iter):
-        if (i%50000 == 0):
-            print('Eroding Drop: ' + str(i))
+        if i % 50000 == 0:
+            print("Eroding Drop: " + str(i))
 
         # set up initial vars and xy positions for droplet
-        x = random.randint(0,len(map)-1)
-        y = random.randint(0,len(map[0])-1)
+        x = random.randint(0, len(map) - 1)
+        y = random.randint(0, len(map[0]) - 1)
 
         # print(str(x) + ":" + str(y))
 
-        for time in range(25): # drop lifespan = 30
+        for time in range(25):  # drop lifespan = 25
             # find lowest surrounding point
             deltaHeight = getDeltaHeight(map, x, y)
             d_x = 0
             d_y = 0
-            for i in [-1,0,1]:
-                for j in [-1,0,1]:
-                    if (deltaHeight[i+1][j+1] < deltaHeight[d_x][d_y]):
+            for i in [-1, 0, 1]:
+                for j in [-1, 0, 1]:
+                    if deltaHeight[i + 1][j + 1] < deltaHeight[d_x][d_y]:
                         d_x = i
                         d_y = j
             fu_x = x + d_x
             fu_y = y + d_y
 
             # Perform droplet move
-            ch_height = map[x][y] - map[fu_x][fu_y]
-            rockMult = 1
-            if (map[x][y] - carry*ch_height < rockmap[x][y]):
-                rockMult = 0
-                # print('hit rock')
-                rockmap[x][y] = map[x][y] - carry*ch_height*rockMult
+            ch_height = map[x][y] - map[fu_x][fu_y]  # get base delta height
+            rockMult = 1  # get multiplier due to bedrock
+            if map[x][y] - carry * ch_height < rockmap[x][y]:
+                rockMult = 0.1
+                rockmap[x][y] = map[x][y] - carry * ch_height * rockMult
             map[x][y] -= carry * ch_height * rockMult
             map[fu_x][fu_y] += carry * ch_height
 
@@ -63,13 +71,22 @@ def erodeMap(map, rockmap, iter=400000, carry=.07):
             # set hydrationMap
             hydrationMap[x][y] += 1
 
-
     return (map, hydrationMap)
 
-if __name__ == '__main__':
-    map = readCSV('./maps/raw/heightmap.csv')
-    rock = readCSV('./maps/raw/rockmap.csv')
-    height, hydration = erodeMap(map, rock, 600000)
-    writeCSV(height, './maps/processed/erodedmap.csv')
-    writeCSV(hydration, './maps/processed/hydrationmap.csv')
-    viewMap(hydration)
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if len(args) != 4:
+        print("Arguments: [source.csv] [rock.csv] [destination.csv] <#kiterations>")
+        quit()
+    source = args[0]
+    rock_source = args[1]
+    destination = args[2]
+    k_iterations = int(args[3])
+    print(f"Running: ({source}, {rock_source}) #{k_iterations}k => {destination}")
+    map = readCSV(source)
+    rock = readCSV(rock_source)
+    height, hydration = erodeMap(map, rock, 1000 * k_iterations)
+    writeCSV(height, destination)
+    writeCSV(hydration, "hydrationmap.csv")
+    #  viewMap(height)

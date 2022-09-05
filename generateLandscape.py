@@ -17,13 +17,7 @@ def generateNoiseMap(length, width, scale=190, roughness=5, shift=2.0):
 
 def generateTerrainMaps(x=150, y=150):
     heightmap = normalizeNoiseMap(generateNoiseMap(x,y), 0, 1)
-    rockmap = normalizeNoiseMap(generateNoiseMap(x, y, roughness=8), 0, 1)
-    # for i in range(x):
-    #     for j in range(y):
-    #         if rockmap[i][j] > 0:
-    #             rockmap[i][j] /= (2/3)
-    #         if heightmap[i][j] < rockmap[i][j]:
-    #             rockmap[i][j] = heightmap[i][j]
+    rockmap = normalizeNoiseMap(generateNoiseMap(x,y, roughness=8), 0, 1)
     return (heightmap, rockmap)
 
 if __name__ == '__main__':
