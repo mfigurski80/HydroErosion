@@ -1,7 +1,7 @@
 #! /home/miko/python/HydroErosion/env/bin/python3
 
 import random
-from utilities import mean
+from . utilities import mean
 
 #  from viewLandscape import viewMap
 

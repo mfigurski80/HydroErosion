@@ -1,7 +1,7 @@
 
 import sys
-from utilities import readCSV, writeCSV
-from erodeLandscape import erodeMap
+from . utilities import readCSV, writeCSV
+from . erodeLandscape import erodeMap
 
 def main():
     args = sys.argv[1:]

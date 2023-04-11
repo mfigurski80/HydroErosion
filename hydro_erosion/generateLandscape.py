@@ -1,5 +1,5 @@
 import noise
-from utilities import writeCSV, normalizeNoiseMap
+from . utilities import writeCSV, normalizeNoiseMap
 
 def generateNoiseMap(length, width, scale=190, roughness=5, shift=2.0):
     octaves = roughness
