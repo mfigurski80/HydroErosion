@@ -1,11 +1,9 @@
 #! /home/miko/python/HydroErosion/env/bin/python3
 
-import sys
 import random
-from utilities import readCSV, writeCSV, mean
+from utilities import mean
 
 #  from viewLandscape import viewMap
-
 
 def getDeltaHeight(map, x, y):
     deltaHeight = []
@@ -72,21 +70,3 @@ def erodeMap(map, rockmap, iter=400000, carry=0.15):
             hydrationMap[x][y] += 1
 
     return (map, hydrationMap)
-
-
-if __name__ == "__main__":
-    args = sys.argv[1:]
-    if len(args) != 4:
-        print("Arguments: [source.csv] [rock.csv] [destination.csv] <#kiterations>")
-        quit()
-    source = args[0]
-    rock_source = args[1]
-    destination = args[2]
-    k_iterations = int(args[3])
-    print(f"Running: ({source}, {rock_source}) #{k_iterations}k => {destination}")
-    map = readCSV(source)
-    rock = readCSV(rock_source)
-    height, hydration = erodeMap(map, rock, 1000 * k_iterations)
-    writeCSV(height, destination)
-    writeCSV(hydration, "hydrationmap.csv")
-    #  viewMap(height)
