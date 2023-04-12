@@ -1,6 +1,5 @@
 #! /home/miko/python/HydroErosion/env/bin/python3
 
-import random
 from . utilities import mean
 
 #  from viewLandscape import viewMap
@@ -27,22 +26,9 @@ def getDeltaHeight(map, x, y):
 
 
 # Perform actual erosion operation on map
-def erodeMap(map, rockmap, iter=400000, carry=0.15):
-
-    hydrationMap = [[0] * len(row) for row in map]
-
-    for i in range(iter):
-        if i % 50000 == 0:
-            print("Eroding Drop: " + str(i))
-
-        # set up initial vars and xy positions for droplet
-        x = random.randint(0, len(map) - 1)
-        y = random.randint(0, len(map[0]) - 1)
-
-        # print(str(x) + ":" + str(y))
-
-        for time in range(25):  # drop lifespan = 25
-            # find lowest surrounding point
+def erodeWithDrop(map, rockmap, hydrationMap, x, y, carry):
+    for time in range(25):  # drop lifespan = 25
+        # find lowest surrounding point
             deltaHeight = getDeltaHeight(map, x, y)
             d_x = 0
             d_y = 0
@@ -69,4 +55,12 @@ def erodeMap(map, rockmap, iter=400000, carry=0.15):
             # set hydrationMap
             hydrationMap[x][y] += 1
 
-    return (map, hydrationMap)
+
+def erodeMap(heightmap, rockmap, iterate=400, carry=0.15):
+    hydrationMap = [[0] * len(row) for row in heightmap]
+    for i in range(iterate):
+        for x in range(len(heightmap)):
+            for y in range(len(heightmap[0])):
+                erodeWithDrop(heightmap, rockmap, hydrationMap, x, y, carry)
+
+    return (heightmap, hydrationMap)

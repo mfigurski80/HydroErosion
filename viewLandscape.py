@@ -1,5 +1,5 @@
 import plotly.graph_objects as go # https://plot.ly/python/3d-surface-plots/
-from utilities import readCSV, normalizeNoiseMap, dim
+from hydro_erosion.utilities import readCSV, normalizeNoiseMap, dim
 from mayavi import mlab
 
 # Render map
