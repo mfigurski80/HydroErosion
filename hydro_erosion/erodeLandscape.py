@@ -1,8 +1,3 @@
-#! /home/miko/python/HydroErosion/env/bin/python3
-
-from . utilities import mean
-
-#  from viewLandscape import viewMap
 
 def getDeltaHeight(map, x, y):
     deltaHeight = []
@@ -29,34 +24,34 @@ def getDeltaHeight(map, x, y):
 def erodeWithDrop(map, rockmap, hydrationMap, x, y, carry):
     for time in range(25):  # drop lifespan = 25
         # find lowest surrounding point
-            deltaHeight = getDeltaHeight(map, x, y)
-            d_x = 0
-            d_y = 0
-            for i in [-1, 0, 1]:
-                for j in [-1, 0, 1]:
-                    if deltaHeight[i + 1][j + 1] < deltaHeight[d_x][d_y]:
-                        d_x = i
-                        d_y = j
-            fu_x = x + d_x
-            fu_y = y + d_y
+        deltaHeight = getDeltaHeight(map, x, y)
+        d_x = 0
+        d_y = 0
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
+                if deltaHeight[i + 1][j + 1] < deltaHeight[d_x][d_y]:
+                    d_x = i
+                    d_y = j
+        new_x = x + d_x
+        new_y = y + d_y
 
-            # Perform droplet move
-            ch_height = map[x][y] - map[fu_x][fu_y]  # get base delta height
-            rockMult = 1  # get multiplier due to bedrock
-            if map[x][y] - carry * ch_height < rockmap[x][y]:
-                rockMult = 0.1
-                rockmap[x][y] = map[x][y] - carry * ch_height * rockMult
-            map[x][y] -= carry * ch_height * rockMult
-            map[fu_x][fu_y] += carry * ch_height
+        # Perform droplet move
+        ch_height = map[x][y] - map[new_x][new_y]  # get base delta height
+        rockMult = 1  # get multiplier due to bedrock
+        if map[x][y] - carry * ch_height < rockmap[x][y]:
+            rockMult = 0.1
+            rockmap[x][y] = map[x][y] - carry * ch_height * rockMult
+        map[x][y] -= carry * ch_height * rockMult
+        map[new_x][new_y] += carry * ch_height
 
-            x = fu_x
-            y = fu_y
+        x = new_x
+        y = new_y
 
-            # set hydrationMap
-            hydrationMap[x][y] += 1
+        # set hydrationMap
+        hydrationMap[x][y] += 1
 
 
-def erodeMap(heightmap, rockmap, iterate=400, carry=0.15):
+def erodeMap(heightmap, rockmap, iterate=400, carry=0.2):
     hydrationMap = [[0] * len(row) for row in heightmap]
     for i in range(iterate):
         for x in range(len(heightmap)):
