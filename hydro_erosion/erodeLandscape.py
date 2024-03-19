@@ -1,3 +1,4 @@
+import numpy as np
 
 def getDeltaHeight(map, x, y):
     deltaHeight = []
@@ -20,8 +21,8 @@ def getDeltaHeight(map, x, y):
     return deltaHeight
 
 
-# Perform actual erosion operation on map
 def erodeWithDrop(map, rockmap, hydrationMap, x, y, carry):
+    """Perform actual erosion operation on map"""
     for time in range(25):  # drop lifespan = 25
         # find lowest surrounding point
         deltaHeight = getDeltaHeight(map, x, y)
@@ -37,11 +38,11 @@ def erodeWithDrop(map, rockmap, hydrationMap, x, y, carry):
 
         # Perform droplet move
         ch_height = map[x][y] - map[new_x][new_y]  # get base delta height
-        rockMult = 1  # get multiplier due to bedrock
+        rock_mult = 1  # get multiplier due to bedrock
         if map[x][y] - carry * ch_height < rockmap[x][y]:
-            rockMult = 0.1
-            rockmap[x][y] = map[x][y] - carry * ch_height * rockMult
-        map[x][y] -= carry * ch_height * rockMult
+            rock_mult = 0.1
+            rockmap[x][y] = map[x][y] - carry * ch_height * rock_mult
+        map[x][y] -= carry * ch_height * rock_mult
         map[new_x][new_y] += carry * ch_height
 
         x = new_x
@@ -59,3 +60,12 @@ def erodeMap(heightmap, rockmap, iterate=400, carry=0.2):
                 erodeWithDrop(heightmap, rockmap, hydrationMap, x, y, carry)
 
     return (heightmap, hydrationMap)
+
+
+if __name__ == '__main__':
+    # benchmark
+    heightmap = np.random.randint(1,10,(5,5))
+    rockmap = np.zeros((5,5))
+    print(heightmap)
+    (final, hydration) = erodeMap(heightmap, rockmap, iterate=10)
+    print(hydration)
